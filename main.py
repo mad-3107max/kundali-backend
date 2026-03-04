@@ -5,9 +5,7 @@ import os
 
 app = FastAPI()
 
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
+client = Groq(api_key=os.environ["GROQ_API_KEY"]))
 
 class KundaliRequest(BaseModel):
     name: str
