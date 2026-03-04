@@ -1,5 +1,6 @@
 fastapi
-uvicorn
+uvicorn[standard]
 groq
 pydantic
 requests
+python-dotenv
