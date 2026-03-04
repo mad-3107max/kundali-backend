@@ -5,13 +5,18 @@ import os
 
 app = FastAPI()
 
-client = Groq(api_key=os.environ["GROQ_API_KEY"])
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class KundaliRequest(BaseModel):
     name: str
     date: str
     time: str
     place: str
+
+
+@app.get("/")
+def root():
+    return {"message": "Kundali API is running"}
 
 
 @app.post("/generate")
