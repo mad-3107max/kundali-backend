@@ -53,6 +53,7 @@ class MatchRequest(BaseModel):
 class HoroscopeRequest(BaseModel):
     rashi: str
     language: Optional[str] = "en"
+        period: Optional[str] = "daily"
 
 class NumerologyRequest(BaseModel):
     name: str
@@ -118,10 +119,28 @@ Return ONLY valid JSON: {{"score":<0-36>,"verdict":"<text>","overall":"<summary>
 @app.post("/horoscope")
 def daily_horoscope(data: HoroscopeRequest):
     today = date.today().strftime("%B %d, %Y")
+    year = date.today().year
     lang = get_lang_instruction(data.language)
-    prompt = f"""You are a Vedic astrologer. {lang} Give today's ({today}) detailed horoscope for {data.rashi} rashi. Return ONLY valid JSON: {{"rashi":"{data.rashi}","date":"{today}","overall":"<2-3 sentences>","love":"<1-2 sentences>","career":"<1-2 sentences>","health":"<1-2 sentences>","finance":"<1-2 sentences>","lucky_number":<number>,"lucky_color":"<color>","lucky_direction":"<direction>","tip":"<daily tip>"}}"""
+    
+    # Define period-specific prompts
+    if data.period == "daily":
+        time_ref = f"today ({today})"
+        scope = "detailed"
+    elif data.period == "weekly":
+        time_ref = "this week"
+        scope = "weekly overview"
+    elif data.period == "monthly":
+        time_ref = "this month"
+        scope = "monthly forecast"
+    elif data.period == "yearly":
+        time_ref = f"the year {year}"
+        scope = "yearly predictions"
+    else:
+        time_ref = f"today ({today})"
+        scope = "detailed"
+    
+    prompt = f"""You are a Vedic astrologer. {lang} Give {time_ref} {scope} horoscope for {data.rashi} rashi. Return ONLY valid JSON: {{"rashi":"{data.rashi}","date":"{today}","overall":"<2-3 sentences>","love":"<1-2 sentences>","career":"<1-2 sentences>","health":"<1-2 sentences>","finance":"<1-2 sentences>","lucky_number":<number>,"lucky_color":"<color>","lucky_direction":"<direction>","tip":"<{data.period} tip>"}}"""
     return ask_groq_json(prompt)
-
 @app.post("/numerology")
 def numerology(data: NumerologyRequest):
     lang = get_lang_instruction(data.language)
