@@ -53,7 +53,7 @@ class MatchRequest(BaseModel):
 class HoroscopeRequest(BaseModel):
     rashi: str
     language: Optional[str] = "en"
-        period: Optional[str] = "daily"
+    period: Optional[str] = "daily"
 
 class NumerologyRequest(BaseModel):
     name: str
